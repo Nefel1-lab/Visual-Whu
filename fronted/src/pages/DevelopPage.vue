@@ -35,11 +35,14 @@
         </div>
       </div>
     </div>
-    <div class="right-text-container">
-        <div class="right-text-box" v-for="(item, index) in rightTextItems" :key="index">
-          {{ item.content }}
-        </div>
+
+    <!-- 修改右侧文本框模板 -->
+    <div class="right-text-container" :style="{opacity: rightTextOpacity, transition: 'opacity 0.3s ease'}">
+      <div v-for="(item, index) in rightTextItems" :key="index" class="right-text-item">
+        <div class="right-text-type">{{ item.type }}</div>
+        <div class="right-text-content">{{ item.content }}</div>
       </div>
+    </div>
 
     <!-- 将右侧文本框移出对称图片容器 -->
     <div class="symmetrical-images">
@@ -86,6 +89,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import festivalData from '/public/data/端午节习俗.json';
+import geneData from '/public/data/端午节基因图谱.json';
 
 const timeCategories = ref([]);
 
@@ -104,6 +108,11 @@ onMounted(() => {
   boxStates.value = timeCategories.value.map(() => ({
     isBorder0: true
   }));
+
+  // 新增：自动触发第一个center-text的点击状态
+  if (timeCategories.value.length > 0) {
+    toggleCenterBox(0); // 触发第一个选项的点击
+  }
 });
 
 const textBox1Content = ref("文本框1"); // 添加标题状态
@@ -115,17 +124,23 @@ const timelineItems = ref([]); // 修改为存储完整对象
 const textBoxOpacity = ref(1);
 const middleTextOpacity = ref(1);
 
+// 修改右侧文本框数据获取逻辑
+const rightTextItems = ref([]);
+
 // 修改切换函数
+const rightTextOpacity = ref(1); // 新增右侧文本框透明度控制
+
 const toggleCenterBox = async (index) => {
   // 同时开始淡出效果
   textBoxOpacity.value = 0;
   middleTextOpacity.value = 0;
+  rightTextOpacity.value = 0; // 新增：右侧文本框淡出
   timelineItems.value.forEach(item => {
     item.visible = false;
   });
   
   // 等待淡出完成
-  await new Promise(resolve => setTimeout(resolve, 300));
+  await new Promise(resolve => setTimeout(resolve, 200));
   
   // 更新内容
   boxStates.value.forEach((state, i) => {
@@ -137,13 +152,39 @@ const toggleCenterBox = async (index) => {
   const selectedItem = festivalData.端午节.find(item => item.time === selectedTime);
   middleTextContent.value = selectedItem ? selectedItem.period : "发展历程";
   
-  // 同时更新时间线内容并开始淡入
+  // 更新时间线内容
   timelineItems.value = festivalData.端午节
     .filter(item => item.time === selectedTime)
     .map(item => ({ ...item, visible: true }));
-  
+
+  // 修改：安全地更新右侧文本框内容
+  try {
+    rightTextItems.value = (geneData.端午节基因图谱 || [])
+      .filter(item => item && item.time === selectedTime)
+      .map(item => ({
+        type: item.type || '未知类型',
+        content: item.content || '暂无内容'
+      }));
+    
+    // 如果没有数据，显示提示
+    if (rightTextItems.value.length === 0) {
+      rightTextItems.value = [{
+        type: '提示',
+        content: '该时期暂无基因数据'
+      }];
+    }
+  } catch (error) {
+    console.error('加载基因数据失败:', error);
+    rightTextItems.value = [{
+      type: '错误',
+      content: '数据加载失败'
+    }];
+  }
+
+  // 淡入效果
   textBoxOpacity.value = 1;
   middleTextOpacity.value = 1;
+  rightTextOpacity.value = 1; // 新增：右侧文本框淡入
 };
 
 // 计算文本框位置
@@ -169,12 +210,7 @@ const getTimelineTextStyle = (index, total) => {
 };
 
 // 添加右侧文本框数据
-const rightTextItems = ref([
-  { content: '先秦时期：部落联盟制 → 集体祭祀需求' },
-  { content: '秦汉时期：大一统帝国 → 南北习俗整合' }, 
-  { content: '隋唐五代：科举制成熟 → 龙舟竞渡寓意' },
-  { content: '近现代：非遗保护政策 → 民俗复兴' }
-]);
+
 
 const isBorder0 = ref(true);
 
@@ -389,27 +425,42 @@ const isBorder0 = ref(true);
 
 /* 独立右侧文本框样式 */
 .right-text-container {
-  position: absolute; /* 改为fixed定位 */
-  right: 15vw;
+  position: absolute;
+  right: 20vw;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  width: 250px;
-  z-index: 25; /* 提高z-index确保在最上层 */
-  pointer-events: auto; /* 确保可以交互 */
+  gap: 15px;
+  width: 20vw;
+  z-index: 25;
 }
 
-.right-text-box {
-  padding: 15px;
-  background-color: rgba(255,255,255,0.9); /* 提高透明度 */
-  border-radius: 8px;
+.right-text-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.right-text-type {
+  padding: 8px 15px;
+  background-color: rgba(235, 212, 176, 0.8);
+  border-radius: 4px;
+  font-family: "MyCustomFont";
+  color: brown;
+  font-size: 24px;
+
+}
+
+.right-text-content {
+  padding: 12px 15px;
+  background-color: rgba(255, 255, 255, 0);
+  border-radius: 4px;
   font-family: "MyCustomFont";
   color: rgb(90,90,90);
-  font-size: 16px;
+  font-size: 20px;
   line-height: 1.5;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* 添加阴影增强层次感 */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 .timeline-title-container {
   position: absolute;

@@ -1,20 +1,7 @@
 <template>
   <q-page class="q-pa-md policy-page">
     <!-- 新增按钮导航区域 -->
-    <div class="nav-buttons">
-      <q-btn 
-        class="nav-btn"
-        label="国家非遗政策" 
-        @click="switchSite('map')"
-        :class="{ active: currentSite === 'map' }"
-      />
-      <q-btn 
-        class="nav-btn"
-        label="地方非遗政策"
-        @click="switchSite('map2')" 
-        :class="{ active: currentSite === 'map2' }"
-      />
-    </div>
+
 
     <!-- 左上角标题区域 -->
     <div class="title-area">
@@ -210,25 +197,7 @@ const switchSite = (site) => {
   /* 这里可以添加具体的样式规则 */
   /* 例如：body { background-color: #f0f0f0; } */
 /* 修改导航按钮样式 */
-.nav-buttons {
-  position: absolute;
-  top: 2vh;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;  
-  gap: 25vw; /* 增大按钮间距 */
-  z-index: 100;
-}
 
-.nav-btn {
-  padding: 10px 30px; /* 增大按钮尺寸 */
-  background-color: rgba(255, 255, 255, 0.342) !important; /* 强制白色背景 */
-  border-radius: 4px;
-  font-family: "SimSun", serif;
-  font-size: 1.2vw;
-  color: #333 !important; /* 深色文字 */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* 添加阴影 */
-}
 
 
 
@@ -245,13 +214,13 @@ const switchSite = (site) => {
 
 
 .title-text {
-  font-family: "SimSun", serif;
-  font-size: 2vw; /* 从2.5vw减小到2vw */
-  font-weight: bold;
-  color: #000;
+  font-family: "MyCustomFont";
+  font-size: 2vw;
+
+  color: brown; /* 统一为棕色 */
   margin: 0;
   padding-left: 1.5vw;
-  margin-bottom:-2vh ;
+  margin-bottom: -2vh;
 }
 
 /* 标题装饰图标样式 */
@@ -306,8 +275,8 @@ const switchSite = (site) => {
   padding: 0 1vw;
   margin-right: 0.5vw;
   font-size: 0.9vw;
-  font-family: "SimSun", serif;
-  font-weight: bold;
+  font-family: "MyCustomFont";
+
   white-space: normal;
   word-break: break-all;
   overflow: visible;
@@ -391,7 +360,7 @@ const switchSite = (site) => {
   left: 4vw;
   top: 12vh;  
   background: transparent;
-
+  font-family:"MyCustomFont";
   padding: 20px;
   overflow-y: auto;
   /* 新增滚动条样式 */
@@ -414,10 +383,14 @@ const switchSite = (site) => {
 }
 
 .detail-content {
-  font-family: "SimSun", serif;
+  font-family:"MyCustomFont";
   font-size: 1vw; /* 从1.2vw减小到1vw */
   line-height: 1.6;
   white-space: pre-wrap;
   color: #333;
+}
+@font-face {
+  font-family: 'MyCustomFont';
+  src: url('/fonts/FZ1.ttf') format('truetype');
 }
 </style>

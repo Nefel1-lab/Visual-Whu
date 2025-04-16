@@ -442,10 +442,10 @@ const updateTooltipPosition = () => {
 }
 
 .title-text {
-  font-family: "SimSun", serif;
+  font-family: "MyCustomFont";
   font-size: 2vw;
-  font-weight: bold;
-  color: #000;
+
+  color: brown; /* 统一为棕色 */
   margin: 0;
   padding-left: 1.5vw;
   margin-bottom: -2vh;
@@ -482,9 +482,9 @@ const updateTooltipPosition = () => {
   max-height: 60vh;
   padding: 1vh 0;
   margin-left: 0;
-  font-family: "SimSun", serif;
+  font-family: "MyCustomFont";
   font-size: 0.9vw;
-  font-weight: bold;
+
   transition: all 0.3s ease;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -666,12 +666,7 @@ const updateTooltipPosition = () => {
   max-width: 80%;
   max-height: 80%;
 }
-</style>
 
-
-
-
-<style scoped>
 /* 添加右侧文本框样式 */
 .right-textbox-container {
   position: absolute;
@@ -694,9 +689,9 @@ const updateTooltipPosition = () => {
   text-orientation: upright;
   min-width: 4vw;
   padding: 0vh 0;
-  font-family: serif;
+  font-family:"MyCustomFont";
   font-size: 1vw;  /* 基础字体大小 */
-  font-weight: bold;
+
   transition: all 0.3s ease;  /* 添加过渡效果 */
   overflow: hidden;
   text-overflow: ellipsis;
@@ -770,6 +765,10 @@ const updateTooltipPosition = () => {
   transform: scale(1.05);  /* 轻微放大 */
   font-size: 1.1vw;       /* 字体放大0.1vw */
   cursor: pointer;
+}
+@font-face {
+  font-family: 'MyCustomFont';
+  src: url('/fonts/FZ1.ttf') format('truetype');
 }
 </style>
 
