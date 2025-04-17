@@ -438,9 +438,7 @@ h2 {
   font-family: 'MyCustomFont';
   src: url('/fonts/FZ1.ttf') format('truetype');
 }
-</style>
 
-<style scoped>
 .q-select, .q-input {
   font-family: "MyCustomFont";
 }
@@ -449,9 +447,7 @@ h2 {
   font-family: "MyCustomFont";
   font-size: 14px;
 }
-</style>
 
-<style scoped>
 /* 调整布局样式 */
 .row.q-col-gutter-md {
   display: flex;

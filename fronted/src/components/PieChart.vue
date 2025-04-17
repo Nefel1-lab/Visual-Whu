@@ -37,12 +37,6 @@ const updateChart = () => {
 
   console.log('PieChart: Data', props.chartData);
   const sortedData = [...props.chartData].sort((a, b) => b.value - a.value);
-  let displayData = sortedData;
-  if (sortedData.length > 10) {
-    const top9 = sortedData.slice(0, 9);
-    const othersSum = sortedData.slice(9).reduce((sum, item) => sum + item.value, 0);
-    displayData = [...top9, { name: '其他', value: othersSum }];
-  }
 
   const option = {
     title: { text: '非遗项目分布', left: 'center' },
@@ -54,8 +48,8 @@ const updateChart = () => {
         type: 'pie',
         radius: ['40%', '70%'],
         center: ['60%', '50%'],
-        data: displayData,
-        label: { show: true, formatter: '{b}: {c} ({d}%)' }
+        data: sortedData,
+        label: { show: false } // 隐藏区块数据展示
       }
     ]
   };

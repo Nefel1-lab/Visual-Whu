@@ -37,7 +37,6 @@ const updateChart = () => {
 
   console.log('BarChart: Data', props.chartData);
   const sortedData = [...props.chartData].sort((a, b) => b.value - a.value);
-  const top10Data = sortedData.slice(0, 10);
 
   const option = {
     title: { text: '非遗项目分类统计', left: 'center' },
@@ -45,18 +44,34 @@ const updateChart = () => {
     grid: { left: '5%', right: '5%', bottom: '10%', top: '15%', containLabel: true },
     xAxis: {
       type: 'category',
-      data: top10Data.map(item => item.name),
+      data: sortedData.map(item => item.name),
       axisLabel: { rotate: 30 }
     },
     yAxis: { type: 'value', name: '数量' },
+    dataZoom: [{
+      type: 'inside',
+      start: 0,
+      end: 100
+    }, {
+      type: 'slider',
+      show: true,
+      start: 0,
+      end: 100,
+      bottom: '2%',
+      backgroundColor: 'white', // 背景色
+      color: ['#333'], // 文字颜色
+      shadowBlur: 5, // 阴影模糊度
+      shadowColor: '#999', // 阴影颜色
+      shadowOffsetX: 2, // 阴影水平偏移
+      shadowOffsetY: 2 // 阴影垂直偏移
+    }],
     series: [
       {
         name: '数量',
         type: 'bar',
-        data: top10Data.map(item => item.value),
+        data: sortedData.map(item => item.value),
         barWidth: '40%',
         label: { show: true, position: 'top' },
-
       }
     ]
   };

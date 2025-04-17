@@ -74,8 +74,8 @@
           
           <div class="timeline-image-container" v-if="item.image">
             <img 
-              :src="`/deve_images/端午节图片/${item.image}.png`" 
-              alt="端午节习俗图片"
+              :src="`/deve_images/${festivalName}图片/${item.image}.png`" 
+              :alt="`${festivalName}习俗图片`"
               class="timeline-image"
             />
           </div>
@@ -83,13 +83,53 @@
         </div>
       </div>
     </div>
+    <!-- 添加右上角选择栏 -->
+    <div class="selection-container">
+      <q-select
+        v-model="festivalName"
+        :options="festivalOptions"
+        label="选择节日"
+        dense
+        outlined
+        @update:model-value="handleFestivalChange"
+      />
+    </div>
   </q-page>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import festivalData from '/public/data/端午节习俗.json';
-import geneData from '/public/data/端午节基因图谱.json';
+import festivalData from '/public/data/习俗/端午节.json';
+import geneData from '/public/data/基因图谱/端午节.json';
+
+// 新增变量存储节日名称
+const festivalName = ref('端午节');
+const festivalOptions = ref(['端午节', '春节', '中秋节']); // 预设节日选项
+
+// 处理节日变化
+const handleFestivalChange = () => {
+  // 重新加载数据
+  loadData();
+};
+
+// 加载数据函数
+const loadData = () => {
+  const times = new Set();
+  festivalData[festivalName.value].forEach(item => {
+    times.add(item.time);
+  });
+  timeCategories.value = Array.from(times);
+  
+  // 初始化每个文本框的状态
+  boxStates.value = timeCategories.value.map(() => ({
+    isBorder0: true
+  }));
+
+  // 自动触发第一个center-text的点击状态
+  if (timeCategories.value.length > 0) {
+    toggleCenterBox(0);
+  }
+};
 
 const timeCategories = ref([]);
 
@@ -99,7 +139,7 @@ const boxStates = ref([]);
 // 初始化文本框状态
 onMounted(() => {
   const times = new Set();
-  festivalData.端午节.forEach(item => {
+  festivalData[festivalName.value].forEach(item => {
     times.add(item.time);
   });
   timeCategories.value = Array.from(times);
@@ -149,17 +189,17 @@ const toggleCenterBox = async (index) => {
   boxStates.value[index].isBorder0 = !boxStates.value[index].isBorder0;
   textBox1Content.value = timeCategories.value[index];
   const selectedTime = timeCategories.value[index];
-  const selectedItem = festivalData.端午节.find(item => item.time === selectedTime);
+  const selectedItem = festivalData[festivalName.value].find(item => item.time === selectedTime);
   middleTextContent.value = selectedItem ? selectedItem.period : "发展历程";
   
   // 更新时间线内容
-  timelineItems.value = festivalData.端午节
+  timelineItems.value = festivalData[festivalName.value]
     .filter(item => item.time === selectedTime)
     .map(item => ({ ...item, visible: true }));
 
   // 修改：安全地更新右侧文本框内容
   try {
-    rightTextItems.value = (geneData.端午节基因图谱 || [])
+    rightTextItems.value = (geneData[festivalName.value] || []) // 直接使用 festivalName.value 获取数据
       .filter(item => item && item.time === selectedTime)
       .map(item => ({
         type: item.type || '未知类型',
@@ -234,6 +274,13 @@ const isBorder0 = ref(true);
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 10;
+}
+.selection-container {
+  position: absolute;
+  top: 3vw;
+  right: 8vw;
+  z-index: 30;
+  width: 200px;
 }
 
 .center-image {
@@ -449,7 +496,15 @@ const isBorder0 = ref(true);
   font-family: "MyCustomFont";
   color: brown;
   font-size: 24px;
-
+  background-image: url('/deve_images/title 2.png'); /* 添加背景图片 */
+  background-size: contain; /* 确保图片完全显示 */
+  background-position: center; /* 背景图片居中 */
+  background-repeat: no-repeat; /* 确保图片仅显示一次 */
+  width: 100%; /* 宽度占满父容器 */
+  height: 100%; /* 高度占满父容器 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .right-text-content {
@@ -477,5 +532,16 @@ const isBorder0 = ref(true);
   font-size: 18px;
   color: brown;
   transition: opacity 0.3s ease;
+  background-image: url('/deve_images/title 1.png'); /* 添加背景图片 */
+  background-size: contain; /* 确保图片完全显示 */
+  background-position: center; /* 背景图片居中 */
+  background-repeat: no-repeat; /* 确保图片仅显示一次 */
+  padding: 10px 20px; /* 调整内边距 */
+  border-radius: 4px; /* 圆角效果 */
+  width: 100%; /* 宽度占满父容器 */
+  height: 100%; /* 高度占满父容器 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
