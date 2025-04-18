@@ -99,12 +99,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import festivalData from '/public/data/习俗/端午节.json';
-import geneData from '/public/data/基因图谱/端午节.json';
+import festivalData from '/public/data/习俗.json'; // 修改为融合后的习俗.json
+import geneData from '/public/data/基因图谱.json'; // 修改为融合后的基因图谱.json
 
-// 新增变量存储节日名称
-const festivalName = ref('端午节');
-const festivalOptions = ref(['端午节', '春节', '中秋节']); // 预设节日选项
+// 修改节日名称和选项
+const festivalName = ref(Object.keys(festivalData)[0]); // 默认选择第一个节日
+const festivalOptions = ref(Object.keys(festivalData)); // 从JSON中获取所有节日选项
 
 // 处理节日变化
 const handleFestivalChange = () => {
@@ -174,7 +174,7 @@ const toggleCenterBox = async (index) => {
   // 同时开始淡出效果
   textBoxOpacity.value = 0;
   middleTextOpacity.value = 0;
-  rightTextOpacity.value = 0; // 新增：右侧文本框淡出
+  rightTextOpacity.value = 0;
   timelineItems.value.forEach(item => {
     item.visible = false;
   });
@@ -189,17 +189,24 @@ const toggleCenterBox = async (index) => {
   boxStates.value[index].isBorder0 = !boxStates.value[index].isBorder0;
   textBox1Content.value = timeCategories.value[index];
   const selectedTime = timeCategories.value[index];
-  const selectedItem = festivalData[festivalName.value].find(item => item.time === selectedTime);
-  middleTextContent.value = selectedItem ? selectedItem.period : "发展历程";
   
   // 更新时间线内容
   timelineItems.value = festivalData[festivalName.value]
     .filter(item => item.time === selectedTime)
-    .map(item => ({ ...item, visible: true }));
+    .map(item => ({
+      ...item,
+      visible: true,
+      title: item.title || '默认标题', // 确保标题存在
+      image: item.image || 'default_image' // 确保图片路径存在
+    }));
+
+  // 更新 middleTextContent
+  const selectedItem = festivalData[festivalName.value].find(item => item.time === selectedTime);
+  middleTextContent.value = selectedItem ? selectedItem.period : "发展历程";
 
   // 修改：安全地更新右侧文本框内容
   try {
-    rightTextItems.value = (geneData[festivalName.value] || []) // 直接使用 festivalName.value 获取数据
+    rightTextItems.value = (geneData[festivalName.value] || [])
       .filter(item => item && item.time === selectedTime)
       .map(item => ({
         type: item.type || '未知类型',
@@ -224,7 +231,7 @@ const toggleCenterBox = async (index) => {
   // 淡入效果
   textBoxOpacity.value = 1;
   middleTextOpacity.value = 1;
-  rightTextOpacity.value = 1; // 新增：右侧文本框淡入
+  rightTextOpacity.value = 1;
 };
 
 // 计算文本框位置
@@ -280,7 +287,8 @@ const isBorder0 = ref(true);
   top: 3vw;
   right: 8vw;
   z-index: 30;
-  width: 200px;
+  width: 20vw;
+  background-color: #ffffff9c;
 }
 
 .center-image {
@@ -473,13 +481,13 @@ const isBorder0 = ref(true);
 /* 独立右侧文本框样式 */
 .right-text-container {
   position: absolute;
-  right: 20vw;
+  right: 10vw;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
   gap: 15px;
-  width: 20vw;
+  width: 25vw;
   z-index: 25;
 }
 

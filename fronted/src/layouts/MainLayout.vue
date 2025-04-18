@@ -22,6 +22,11 @@
 
     <!-- 添加左侧点状导航 -->
     <div class="dot-navigation">
+      <!-- 添加上方图片 -->
+      <div class="nav-image top-image">
+        <img src="/images/翻页按键 1.png" alt="翻页按键" />
+      </div>
+
       <div 
         v-for="(route, index) in navRoutes" 
         :key="index"
@@ -35,6 +40,11 @@
         <div class="tooltip">
           {{ route.label }}
         </div>
+      </div>
+
+      <!-- 添加下方图片 -->
+      <div class="nav-image bottom-image">
+        <img src="/images/翻页按键.png" alt="翻页按键" />
       </div>
     </div>
 
@@ -146,7 +156,50 @@ onUnmounted(() => {
   flex-direction: column;
   gap: 5vh;
   z-index: 100;
+}
 
+/* 添加导航图片样式 */
+.nav-image {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-image img {
+  width: 100%; /* 图片宽度与容器相同 */
+  height: 100%; /* 图片高度与容器相同 */
+  object-fit: contain; /* 保持图片比例 */
+}
+
+/* 上方图片动画 */
+.top-image {
+  animation: float-up 2s ease-in-out infinite;
+}
+
+/* 下方图片动画 */
+.bottom-image {
+  animation: float-down 2s ease-in-out infinite;
+}
+
+/* 定义动画 */
+@keyframes float-up {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes float-down {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(10px);
+  }
 }
 
 .dot-item {
@@ -163,8 +216,8 @@ onUnmounted(() => {
 /* 修改点状导航样式 */
 .dot-border {
   position: absolute;
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height:30px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -173,15 +226,7 @@ onUnmounted(() => {
   transform: translate(-50%, -50%);
 }
 
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: #b69860;
-  transition: all 0.3s ease;
-  position: relative;
-  z-index: 2;
-}
+
 
 /* 调整旋转动画速率 */
 .rotating-border {
@@ -191,10 +236,10 @@ onUnmounted(() => {
 }
 
 .dot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background-color: #b69860;
+  background-color: #644d24;
   transition: all 0.3s ease;
   position: relative;
   z-index: 2;

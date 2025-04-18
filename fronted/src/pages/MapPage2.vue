@@ -131,8 +131,7 @@ import { useRouter } from 'vue-router';
 
 // 删除chartsDOM和boundaryDOM引用
 const showText = ref(false);
-const router = useRouter();
-const currentSite = ref('map2');
+
 const searchProvince = ref('');
 const localPolicies = ref([]);
 
@@ -220,7 +219,7 @@ const changePage = (page) => {
   setTimeout(() => {
     currentPage.value = page;
     updateCurrentPageData();
-  }, 500);
+  }, 300);
 };
 
 // 修改handleSearch函数
@@ -249,10 +248,10 @@ const handleSearch = () => {
 
 const getTextboxStyle = (i) => {
   const positions = [
-    { top: 10, left: 4 },   // 第一列位置
-    { top: 10, left: 10 },   // 第二列位置
-    { top: 10, left: 16 },  // 第三列位置
-    { top: 10, left: 22 }   // 第四列位置
+    { top: 10, left: 6 },   // 第一列位置
+    { top: 10, left: 12 },   // 第二列位置
+    { top: 10, left: 18 },  // 第三列位置
+    { top: 10, left: 24 }   // 第四列位置
   ];
   return {
     top: `${positions[i-1].top}vh`,
@@ -554,7 +553,7 @@ const updateTooltipPosition = () => {
 
 .page-info {
   color: #333;
-  font-family: "SimSun", serif;
+  font-family: "MyCustomFont";
   font-size: 1vw;
 }
 
@@ -574,7 +573,7 @@ const updateTooltipPosition = () => {
   border-radius: 8px;
   padding: 20px;
   overflow-y: auto;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   z-index: 5;
 }
 
@@ -607,23 +606,36 @@ const updateTooltipPosition = () => {
   top: 5vh;
   right: 20vw;
   z-index: 10;
-  display: flex; /* 添加flex布局 */
-  align-items: center; /* 垂直居中 */
-  gap: 0px; /* 按钮和输入框间距 */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0); /* 添加背景色 */
+  border-radius: 20px; /* 添加圆角 */
+  padding: 8px 12px; /* 添加内边距 */
+
 }
 
 .search-input {
-  width: 20vw; /* 从30vw缩小到20vw */
-  background: rgba(255, 255, 255, 0.244);
+  width: 20vw;
+  background: rgba(255, 255, 255, 0);
   border-radius: 20px;
   font-size: 1.2vw;
-  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+
   padding: 8px 20px;
-} 
+  font-family: "MyCustomFont"; /* 添加字体样式 */
+}
 
 .search-btn {
-  padding: 20px 20px; /* 调整按钮内边距 */
-  border-radius: 20px; /* 与输入框保持一致 */
+  padding: 15px 15px;
+  border-radius: 20px;
+  font-family: "MyCustomFont"; /* 添加字体样式 */
+  font-size: 1.2vw; /* 调整字体大小 */
+  color: #333; /* 添加字体颜色 */
+
+}
+
+.search-btn:hover {
+  background-color: rgba(233, 213, 181, 0.7); /* 添加悬停效果 */
 }
 
 .prev-btn, .next-btn {

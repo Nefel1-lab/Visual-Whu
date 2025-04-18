@@ -30,18 +30,18 @@
     </div>
 
     <!-- 添加分页按钮 -->
+    <!-- 分页控件 -->
     <div class="pagination">
-      <q-btn 
-        v-if="hasPrevPage"
-        @click="prevPage"
-        label="上一页"
-        class="page-btn"
+      <button 
+        class="prev-btn"
+        @click="changePage(currentPage - 1)"
+        :disabled="currentPage <= 1"
       />
-      <q-btn 
-        v-if="hasNextPage"
-        @click="nextPage"
-        label="下一页"
-        class="page-btn"
+      <span class="page-info">第 {{ currentPage }} 页 / 共 {{ totalPages }} 页</span>
+      <button 
+        class="next-btn"
+        @click="changePage(currentPage + 1)"
+        :disabled="currentPage >= totalPages"
       />
     </div>
     
@@ -121,34 +121,6 @@ const getTextboxStyle = (i) => {
 
 const currentPageItems = computed(() => textItems.value)
 
-const hasNextPage = computed(() => currentPage.value < totalPages.value)
-const hasPrevPage = computed(() => currentPage.value > 1)
-
-const nextPage = () => {
-  if(hasNextPage.value) {
-    showText.value = false
-    setTimeout(() => {
-      currentPage.value++
-      setTimeout(() => {
-        fetchPolicyData(currentPage.value)
-        setTimeout(() => showText.value = true, 300) // 增加额外延迟
-      }, 200) // 页面切换后延迟
-    }, 800) // 淡出动画时间
-  }
-}
-
-const prevPage = () => {
-  if(hasPrevPage.value) {
-    showText.value = false
-    setTimeout(() => {
-      currentPage.value--
-      setTimeout(() => {
-        fetchPolicyData(currentPage.value)
-        setTimeout(() => showText.value = true, 300)
-      }, 200)
-    }, 800)
-  }
-}
 
 const currentDetail = ref('请点击左侧政策查看详情')
 
@@ -165,19 +137,24 @@ const onTextClick = async (index) => {
 }
 
 // 添加网站状态管理
-const currentSite = ref('map')
+
 
 import { useRouter } from 'vue-router'
 const router = useRouter()
 
-const switchSite = (site) => {
-  currentSite.value = site
-  if(site === 'map') {
-    router.push('/map/policy') // 确保路径正确
-  } else {
-    router.push('/map/local') // 确保路径正确
-  }
-}
+
+// 添加翻页功能
+const changePage = (page) => {
+  if (page < 1 || page > totalPages.value) return;
+  showText.value = false;
+  setTimeout(() => {
+    currentPage.value = page;
+    setTimeout(() => {
+      fetchPolicyData(currentPage.value);
+      setTimeout(() => showText.value = true, 300);
+    }, 200);
+  }, 800);
+};
 </script>
 
 <style scoped>
@@ -249,21 +226,21 @@ const switchSite = (site) => {
   margin-bottom: 2vh;
   will-change: transform, opacity; /* 优化动画性能 */
   transition: 
-    opacity 0.8s ease-out,  /* 使用ease-out使动画更平滑 */
-    transform 0.8s ease-out;
+    opacity 0.2s ease-out,  /* 使用ease-out使动画更平滑 */
+    transform 0.2s ease-out;
   will-change: transform, opacity;
 }
 
 /* 保留原有的延迟设置 */
 .textbox-item:nth-child(1) { transition-delay: 0s; }
-.textbox-item:nth-child(2) { transition-delay: 0.15s; }
-.textbox-item:nth-child(3) { transition-delay: 0.3s; }
-.textbox-item:nth-child(4) { transition-delay: 0.45s; }
-.textbox-item:nth-child(5) { transition-delay: 0.6s; }
-.textbox-item:nth-child(6) { transition-delay: 0.75s; }
-.textbox-item:nth-child(7) { transition-delay: 0.9s; }
-.textbox-item:nth-child(8) { transition-delay: 1.05s; }
-.textbox-item:nth-child(9) { transition-delay: 1.2s; }
+.textbox-item:nth-child(2) { transition-delay: 0.1s; }
+.textbox-item:nth-child(3) { transition-delay: 0.2s; }
+.textbox-item:nth-child(4) { transition-delay: 0.3s; }
+.textbox-item:nth-child(5) { transition-delay: 0.4s; }
+.textbox-item:nth-child(6) { transition-delay: 0.5s; }
+.textbox-item:nth-child(7) { transition-delay: 0.6s; }
+.textbox-item:nth-child(8) { transition-delay: 0.7s; }
+.textbox-item:nth-child(9) { transition-delay: 0.8s; }
 .textbox {
   width: 21vw; /* 从20vw扩大到21vw */
   min-height: 3vh;
@@ -282,7 +259,7 @@ const switchSite = (site) => {
   overflow: visible;
   text-overflow: clip;
   text-align: center;
-  transition: color 0.3s ease;
+  transition: color 0.1s ease;
 }
 
 .textbox:hover {
@@ -392,5 +369,56 @@ const switchSite = (site) => {
 @font-face {
   font-family: 'MyCustomFont';
   src: url('/fonts/FZ1.ttf') format('truetype');
+}
+
+/* 分页控件样式 */
+.pagination {
+  position: absolute;
+  left: 20vw;  /* 与标题区域对齐 */
+  bottom: 2vh;  /* 调整为10vh */
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  z-index: 10;
+}
+
+.page-btn {
+  padding: 8px 16px;
+  background-color: rgba(255,255,255,0.7);
+  border-radius: 4px;
+  min-width: 40px;
+}
+
+.page-info {
+  color: #333;
+  font-family: "MyCustomFont";
+  font-size: 1vw;
+}
+
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.prev-btn, .next-btn {
+  width: 30px;
+  height: 30px;
+  background: url('/public/map_images/翻页按键.png') no-repeat center;
+  background-size: contain;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.prev-btn {
+  left:-3vw;
+  transform: translateY(-50%) rotate(90deg); /* 顺时针旋转90° */
+}
+
+.next-btn {
+  right: -3vw;
+  transform: translateY(-50%) rotate(-90deg); /* 逆时针旋转90° */
 }
 </style>
