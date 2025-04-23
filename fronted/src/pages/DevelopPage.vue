@@ -88,7 +88,7 @@
       <q-select
         v-model="festivalName"
         :options="festivalOptions"
-        label="选择节日"
+        label="选择非遗"
         dense
         outlined
         @update:model-value="handleFestivalChange"
@@ -282,13 +282,14 @@ const isBorder0 = ref(true);
   transform: translate(-50%, -50%);
   z-index: 10;
 }
+
 .selection-container {
   position: absolute;
-  top: 3vw;
-  right: 8vw;
+  top: 18vh;
+  left: 25vw;
   z-index: 30;
-  width: 20vw;
-  background-color: #ffffff9c;
+  width: 10vw;
+  background-color: #ffffff00;
 }
 
 .center-image {
@@ -300,7 +301,7 @@ const isBorder0 = ref(true);
 /* 左上角文本框样式 */
 .left-top-text-container {
   position: absolute;
-  top: 3vw;
+  top: 6vw;
   left:8vw;
   z-index: 20;
 }
@@ -308,7 +309,7 @@ const isBorder0 = ref(true);
 .text-box-1 {
   width: 300px;
   padding: 15px;
-  margin-bottom: -20px;
+  margin-bottom: -30px;
   margin-left: -10px;
   font-size: 40px;
   font-family: "MyCustomFont";
@@ -327,13 +328,13 @@ const isBorder0 = ref(true);
 /* 添加中央文本框样式 */
 .center-text-container {
   position: absolute;
-  top: 50%;
+  top: 50vh; /* 从50%改为55%，使其整体下移 */
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 15;
   width: 200px;
   height: 100px;
-  cursor: pointer; /* 添加鼠标指针样式 */
+  cursor: pointer;
   z-index: 16;
 }
 
@@ -352,8 +353,9 @@ const isBorder0 = ref(true);
   font-size: 24px;
   padding: 30px;
   transition: all 0.3s ease;
+  position: relative;
+  top: 5vh; /* 在居中位置下方 5vh 处 */
 }
-
 
 /* 添加自定义字体 */
 @font-face {
@@ -361,12 +363,10 @@ const isBorder0 = ref(true);
   src: url('/fonts/FZ1.ttf') format('truetype');
 }
 
-
-
 /* 添加对称图片样式 */
 .symmetrical-images {
   position: absolute;
-  top: 25vh;
+  top: 30vh;
   left: 7vw;
   transform: translateY(-50%);
   z-index: 15;
@@ -397,7 +397,7 @@ const isBorder0 = ref(true);
 /* 修改时间线容器样式 */
 .timeline-texts-container {
   position: absolute;
-  top: 15vh;
+  top: 18vh;
   left: 15vw;
   width: 30vw;
   height: 60vh;
@@ -482,7 +482,7 @@ const isBorder0 = ref(true);
 .right-text-container {
   position: absolute;
   right: 10vw;
-  top: 50%;
+  top: 60vh;
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;

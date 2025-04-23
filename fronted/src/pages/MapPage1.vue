@@ -11,21 +11,25 @@
     
     <!-- 左侧文本框区域 -->
     <div class="textbox-container">
-      <!-- 修改v-for循环，显示当前页数据 -->
-      <div v-for="(item, index) in currentPageItems" :key="index" 
-           class="textbox-item" 
-           :style="{
-             ...getTextboxStyle(index + 1),
-             opacity: showText ? 1 : 0,
-             transform: showText ? 'translateX(0)' : 'translateX(20px)',
-             transition: `opacity 0.5s ease ${index * 0.1}s, transform 0.5s ease ${index * 0.1}s`
-           }">
-        <div class="textbox" 
-             :title="item"
-             @click="onTextClick(index)">
-          {{ item }}  <!-- 直接显示完整内容，不再截断 -->
+      <div 
+        v-for="(item, index) in currentPageItems" 
+        :key="index" 
+        class="textbox-item" 
+        :style="{
+          ...getTextboxStyle(index + 1),
+          opacity: showText ? 1 : 0,
+          transform: showText ? 'translateX(0)' : 'translateX(20px)',
+          transition: `opacity 0.5s ease ${index * 0.1}s, transform 0.5s ease ${index * 0.1}s`
+        }">
+        <div 
+          class="textbox-wrapper"
+          :class="{ highlighted: activeTextIndex === index }"
+          @click="onTextClick(index)"
+          @mouseenter="handleHover(index, true)"
+          @mouseleave="handleHover(index, false)">
+          <div class="textbox">{{ item }}</div>
+          <div class="line"></div>
         </div>
-        <div class="line"></div>
       </div>
     </div>
 
@@ -76,6 +80,7 @@ const showText = ref(false)
 const currentPage = ref(1)
 const totalPages = ref(1)
 const isLoading = ref(false)
+const activeTextIndex = ref(-1) // 添加当前高亮文本框的索引
 
 const fetchPolicyData = async (page = 1) => {
   isLoading.value = true
@@ -96,14 +101,21 @@ const fetchPolicyData = async (page = 1) => {
   }
 }
 
-onMounted(() => fetchPolicyData())
+onMounted(() => {
+  fetchPolicyData().then(() => {
+    // 默认点击第一个文本框
+    if (textItems.value.length > 0) {
+      onTextClick(0);
+    }
+  });
+});
 
 const getTextboxStyle = (i) => {
   // 只保留奇数编号的位置数据
   const positions = [
-    { top: 6, left:18.5 },    // 1
-    { top: 15, left: 14 },     // 3
-    { top: 24, left: 4 },    // 5
+    { top: 6, left:19.5 },    // 1
+    { top: 15, left: 16 },     // 3
+    { top: 24, left: 6 },    // 5
     { top: 33, left: 1.5 },      // 7
     { top: 42, left: 1.8 },     // 9
     { top: 51, left: 4 },    // 11
@@ -125,6 +137,7 @@ const currentPageItems = computed(() => textItems.value)
 const currentDetail = ref('请点击左侧政策查看详情')
 
 const onTextClick = async (index) => {
+  activeTextIndex.value = index; // 设置当前高亮文本框的索引
   try {
     const response = await fetch(`http://localhost:8000/api/policy-content-by-id?id=${index + 1 + (currentPage.value - 1) * 9}`)
     const data = await response.json()
@@ -155,6 +168,11 @@ const changePage = (page) => {
     }, 200);
   }, 800);
 };
+
+const handleHover = (index, isHover) => {
+  // 在这里实现悬浮逻辑
+  console.log(`Index: ${index}, Hover: ${isHover}`);
+};
 </script>
 
 <style scoped>
@@ -181,7 +199,7 @@ const changePage = (page) => {
 /* 调整标题区域位置 */
 .title-area {
   position: absolute;
-  top: 4vh;
+  top: 6vh;
   left: 8vw;
   display: flex;
   flex-direction: column;
@@ -242,7 +260,7 @@ const changePage = (page) => {
 .textbox-item:nth-child(8) { transition-delay: 0.7s; }
 .textbox-item:nth-child(9) { transition-delay: 0.8s; }
 .textbox {
-  width: 21vw; /* 从20vw扩大到21vw */
+  width: 21vw;
   min-height: 3vh;
   background-color: transparent;
   border: none;
@@ -253,7 +271,6 @@ const changePage = (page) => {
   margin-right: 0.5vw;
   font-size: 0.9vw;
   font-family: "MyCustomFont";
-
   white-space: normal;
   word-break: break-all;
   overflow: visible;
@@ -263,12 +280,19 @@ const changePage = (page) => {
 }
 
 .textbox:hover {
-  color: #ff6b6b; /* 文字高亮颜色 */
- 
-  cursor: pointer; /* 鼠标指针变化 */
+  color: #ff6b6b;
+  cursor: pointer;
+}
+
+/* 添加高亮样式 */
+.textbox.highlighted {
+  color: #ff6b6b;
+  text-shadow: 0 0 5px rgba(255, 107, 107, 0.5);
 }
 
 .line {
+  top:-3vh;
+  left: 21vw;
   width: 6vw;
   height: 0.05vh;
   background-color: #000;
@@ -281,11 +305,11 @@ const changePage = (page) => {
   content: '';
   display: block;
   position: absolute;
-  right: -1vw;
+  right: -2vw;
   top: 50%;
   transform: translateY(-50%);
-  width: 0.8vw;
-  height: 0.8vw;
+  width: 2vw;
+  height: 2vh;
   background-image: url('/map_images/国家级非遗政策牵引点.png');
   background-size: contain;
   background-repeat: no-repeat;
@@ -420,5 +444,28 @@ const changePage = (page) => {
 .next-btn {
   right: -3vw;
   transform: translateY(-50%) rotate(-90deg); /* 逆时针旋转90° */
+}
+
+.textbox-wrapper {
+  position: relative;
+  cursor: pointer;
+  width: 40vw;
+}
+
+.textbox-wrapper:hover .textbox {
+  color: #ff6b6b;
+}
+
+.textbox-wrapper:hover .line::after {
+  transform: translateY(-50%) scale(1.1);
+}
+
+.textbox-wrapper.highlighted .textbox {
+  color: #ff6b6b;
+  text-shadow: 0 0 5px rgba(255, 107, 107, 0.5);
+}
+
+.textbox-wrapper.highlighted .line::after {
+  filter: brightness(1.2);
 }
 </style>

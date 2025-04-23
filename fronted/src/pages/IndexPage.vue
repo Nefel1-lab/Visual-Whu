@@ -1,174 +1,198 @@
 <template>
-  <q-page class="q-pa-md">
-    <div class="bg-container"></div>
-    <div class="content text-center">
-      <!-- 添加4个相同的组件 -->
-      <div 
-        v-for="i in 4" 
-        :key="i" 
-        class="image-container" 
-        :style="getImageContainerStyle(i)" 
-        @mouseenter="() => handleHover(i, true)"
-        @mouseleave="() => handleHover(i, false)"
-        @click="() => handleClick(i)"
-      >
-        <div class="flip-card" :style="getAnimationDelay(i)">
-          <img 
-            :src="`/images/书签${i}.png`" 
-            alt="书签" 
-            class="front-image" 
-            :class="{ 'flipped': hoverStates[i] }"
-          />
-          <img 
-            :src="`/images/书签${i}-1.png`" 
-            alt="书签" 
-            class="back-image" 
-            :class="{ 'flipped': hoverStates[i] }"
-          />
-          <img src="/images/流苏.png" alt="流苏" class="center-image" />
-        </div>
-      </div>
-    </div>
-  </q-page>
+  <div class="bg-carousel">
+    <img 
+      v-for="(img, index) in images" 
+      :key="index" 
+      :src="img" 
+      :class="['carousel-image', { active: currentIndex === index }]"
+    />
+  </div>
+  <div class="overlay"></div> <!-- 新增黑色蒙版 -->
+  <div class="content text-center" :style="{ opacity: contentOpacity }">
+    <div class="main-title">九州非遗志</div>
+    <div class="sub-title">——中国非物质文化遗产可视化平台</div>
+    <img 
+      src="/images/翻页按键.png" 
+      alt="翻页按键" 
+      class="flip-button" 
+      @click="navigateToContent"
+    />
+  </div>
 </template>
 
+
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-// 为每个组件创建独立的悬停状态
-const hoverStates = ref({ 1: false, 2: false, 3: false, 4: false });
-
-// 处理悬停事件
-const handleHover = (index, isHovered) => {
-  hoverStates.value[index] = isHovered;
+const handleClick = () => {
+  router.push('/integrated');
 };
 
-// 处理点击事件
-const handleClick = (index) => {
-  const routes = {
-    1: '/history',
-    2: '/map/policy',
-    3: '/map/local',
-    4: '/data'
-  };
-  router.push(routes[index]);
+const images = [
+  '/images/welcome_image/1.png',
+  '/images/welcome_image/2.png',
+  '/images/welcome_image/3.png',
+  '/images/welcome_image/4.png',
+  '/images/welcome_image/5.png',
+  '/images/welcome_image/6.png',
+];
+
+const currentIndex = ref(0);
+const contentOpacity = ref(0); // 新增内容透明度控制
+
+const flipButtonAnimation = () => {
+  const button = document.querySelector('.flip-button');
+  if (button) {
+    let direction = 1;
+    setInterval(() => {
+      const currentY = parseFloat(button.style.transform.replace('translateY(', '').replace('px)', '')) || 0;
+      if (currentY > 10) direction = -1;  // 将幅度上限从15改为30
+      if (currentY < -10) direction = 1;  // 将幅度下限从-15改为-30
+      button.style.transform = `translateY(${currentY + direction * 2}px)`;  // 将每次移动距离从5改为2
+    }, 50);  // 将间隔时间从200ms改为100ms
+  }
 };
 
-// 获取动画延迟
-const getAnimationDelay = (index) => {
-  const delays = { 1: '-1.8s', 2: '-1.2s', 3: '-4.2s', 4: '-3s' }; // 根据动画时长6s计算
-  return { animationDelay: delays[index] };
-};
+onMounted(() => {
+  // 初始化第一张图片为可见
+  const firstImg = document.querySelector('.carousel-image');
+  if (firstImg) {
+    firstImg.style.opacity = 0.5;
+  }
 
-// 获取 image-container 的样式
-const getImageContainerStyle = (index) => {
-  const positions = {
-    1: { top: '30vh', left: '10%' },
-    2: { top: '22vh', left: '30%' },
-    3: { top: '25vh', left: '50%' },
-    4: { top: '27vh', left: '70%' }
-  };
-  return positions[index];
+  setInterval(() => {
+    // 先隐藏当前图片
+    const currentImg = document.querySelector('.carousel-image.active');
+    if (currentImg) {
+      currentImg.classList.remove('active');
+      currentImg.style.opacity = 0;
+    }
+    
+    // 更新索引
+    currentIndex.value = (currentIndex.value + 1) % images.length;
+    
+    // 显示新图片
+    const nextImg = document.querySelectorAll('.carousel-image')[currentIndex.value];
+    if (nextImg) {
+      nextImg.classList.add('active');
+      nextImg.style.opacity = 0.5;
+    }
+  }, 3000);
+
+  // 修改渐显效果，时长1秒
+  let opacity = 0;
+  const fadeInInterval = setInterval(() => {
+    opacity += 0.02;
+    contentOpacity.value = opacity;
+    if (opacity >= 1) {
+      clearInterval(fadeInInterval);
+    }
+  }, 20); // 每20ms增加0.02，总共1秒达到1
+  flipButtonAnimation();
+});
+
+const navigateToContent = () => {
+  router.push('/integrated'); // 导航到content页面
 };
 </script>
 
 <style scoped>
-/* 修改图片容器样式 */
-.image-container {
-  position: absolute;
-  top: 20vh;
-  width: 20%; /* 设置宽度 */
-}
-
-/* 修改 flip-card 和 front-image 的定位 */
-
-/* 修改 flip-card 动画 */
-.flip-card {
-  position: absolute;
-  width: 300px;
-  height: auto;
-  transform-style: preserve-3d;
-  animation: pendulumZ 6s ease-in-out infinite;
-}
-
-@keyframes pendulumZ {
-  0%, 100% {
-    transform: translateY(0) rotateZ(4deg) rotateY(-10deg);
-  }
-  50% {
-    transform: translateX(33px) rotateZ(-4deg) rotateY(10deg);
-  }
-}
-
-.front-image, .back-image {
-  position: absolute;
-  top: 0; /* 确保 front-image 和 back-image 与 flip-card 对齐 */
-  left: 0;
-  width: 100%;
-  height: auto;
-  backface-visibility: hidden;
-  transition: transform 1s;
-}
-
-.front-image {
-  transform: rotateY(0deg);
-}
-
-.back-image {
-  transform: rotateY(180deg);
-}
-
-.flipped.front-image {
-  transform: rotateY(180deg);
-}
-
-.flipped.back-image {
-  transform: rotateY(360deg);
-}
-/* 添加新图片样式 */
-.center-image {
-  position: relative;
-  top: 35vh;
-  left: 0.5vw;
-  transform: translate(-50%, -50%);
-  width: 17px; /* 根据需要调整大小 */
-  height: auto;
-}
-.bg-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh; /* 使用视口高度确保覆盖整个页面 */
-  z-index: -1;
-  background-image: url('/images/背景.png'); /* 添加背景图 */
-  background-size: cover; /* 确保背景图覆盖整个页面 */
-  background-position: 30% 20%; /* 将背景图位置设置为30% */
-  background-repeat: no-repeat; /* 防止背景图重复 */
-  opacity: 0.5; /* 设置背景图半透明 */
-}
+/* 修改内容区域过渡效果 */
 .content {
   position: relative;
   z-index: 1;
+  transition: opacity 1s ease-in-out; /* 将过渡时间改为1秒 */
 }
-h1 {
-  color: #ff6b6b;
+
+/* 新增蒙版样式 */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.623); /* 黑色半透明 */
+  z-index: 0;
 }
-p {
-  color: #666;
+
+.bg-carousel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: -1;
+  overflow: hidden;
+  background-image: url('/map_images/总背景底图.png'); /* 新增背景图 */
+  background-size: cover; /* 确保背景图覆盖整个页面 */
+  background-position: center; /* 背景图居中 */
 }
-@keyframes bgMove {
-  0% {
-    background-position: 0% 0%;
-  }
-  50% {
-    background-position: 100% 100%;
-  }
-  100% {
-    background-position: 0% 0%;
-  }
+
+/* 确保轮播图片样式正确 */
+.carousel-image {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.carousel-image.active {
+  opacity: 0.5;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  transition: opacity 0.5s ease-in-out; /* 添加过渡效果 */
+}
+
+@font-face {
+  font-family: 'MyCustomFont';
+  src: url('/fonts/FZ1.ttf') format('truetype');
+}
+/* 新增标题样式 */
+.main-title {
+  position: absolute;
+  top: 40vh;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 100px;
+
+  font-family: 'MyCustomFont';
+  color: white;
+  text-shadow: 2px 2px 4px rgb(237, 237, 237);
+  letter-spacing: 0.2em; /* 新增文字间距 */
+}
+
+.sub-title {
+  position: absolute;
+  font-family: 'MyCustomFont';
+  top: 52vh;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2.5rem;
+  color: rgb(228, 73, 73);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.1em; /* 新增文字间距 */
+
+}
+.flip-button {
+  position: absolute;
+  top: 72vh;
+  left: 48%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: auto;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.flip-button:hover {
+  transform: translateX(-50%) scale(1.1); 
 }
 </style>

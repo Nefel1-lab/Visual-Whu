@@ -7,7 +7,10 @@
       <h1 class="title-text">地方非遗政策</h1>
       <img src="\map_images\标题修饰.png" alt="标题修饰" class="title-decoration">
     </div>
-    
+    <div class="map-container">
+      <h1 class="map-name">非物质文化遗产政策地图</h1>
+    </div>
+
     <!-- 恢复搜索框 -->
     <div class="search-area">
       <q-input 
@@ -52,13 +55,15 @@
         class="prev-btn"
         @click="changePage(currentPage - 1)"
         :disabled="currentPage <= 1"
+        title="上一页" 
       />
-      <span class="page-info">第 {{ currentPage }} 页 / 共 {{ totalPages }} 页</span>
       <button 
         class="next-btn"
         @click="changePage(currentPage + 1)"
         :disabled="currentPage >= totalPages"
+        title="下一页"
       />
+      <span class="page-info">第 {{ currentPage }} 页 / 共 {{ totalPages }} 页</span>
     </div>
 
     <!-- 中国地图图片容器 -->
@@ -86,6 +91,7 @@
            }">
         <div class="right-textbox">
           <span 
+            :class="{ highlighted: activeProvinceIndex === index }"
             @mouseenter="showTooltip(item)"
             @mouseleave="hideTooltip"
             @click="searchByProvince(item.text)"
@@ -102,7 +108,7 @@
     :style="tooltipStyle"
   >
     <div>省份: {{ activeTooltip.text }}</div>
-    <div>Value: {{ activeTooltip.value }}</div>
+    <div>政策数: {{ activeTooltip.value }}</div>
   </div>
 </q-page>
 </template>
@@ -112,8 +118,8 @@
 .china-map-container {
   position: absolute;
   right: 2vw;
-  bottom: 2.3vh;
-  z-index: 5;
+  bottom: -1vh;
+  z-index: 1;
 }
 
 .china-map-image {
@@ -274,6 +280,12 @@ const onTextClick = (index) => {
 onMounted(() => {
   showText.value = true;
   // 删除所有地图初始化代码
+  
+  // 默认点击北京
+  const beijingIndex = rightTextItems.value.findIndex(item => item.text === '北京');
+  if (beijingIndex !== -1) {
+    searchByProvince(rightTextItems.value[beijingIndex].text);
+  }
 });
 // 添加右侧文本框数据
 const rightTextItems = ref([
@@ -363,11 +375,18 @@ const getRightTextboxStyle = (i) => {
     right: `${position.right}vw`
   };
 };
+// 添加当前高亮元素的索引
+const activeProvinceIndex = ref(-1);
+
+// 修改 searchByProvince 函数
 const searchByProvince = (provinceName) => {
   // 去除省份名称中的空格
   const cleanName = provinceName.replace(/\s+/g, '');
   searchProvince.value = cleanName;
   handleSearch();
+  
+  // 设置当前高亮元素的索引
+  activeProvinceIndex.value = rightTextItems.value.findIndex(item => item.text === provinceName);
 };
 const activeTooltip = ref(null);
 const tooltipStyle = ref({});
@@ -432,7 +451,7 @@ const updateTooltipPosition = () => {
 /* 标题区域样式 */
 .title-area {
   position: absolute;
-  top: 4vh;
+  top: 6vh;
   left: 8vw;
   display: flex;
   flex-direction: column;
@@ -463,7 +482,7 @@ const updateTooltipPosition = () => {
   left: 1vw;
   width: 25vw;
   top: 10vh;
-  z-index: 9999; /* 从5改为9999，确保在最上层 */
+  z-index: 4; /* 从 9999 调整为 100 */
 }
 
 .textbox-item {
@@ -482,12 +501,12 @@ const updateTooltipPosition = () => {
   padding: 1vh 0;
   margin-left: 0;
   font-family: "MyCustomFont";
-  font-size: 0.9vw;
+  font-size: 1.1vw;
 
   transition: all 0.3s ease;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 1.6;
+  line-height: 1.2;
   word-break: break-all;
   text-align: start; /* 修改为居中 */
   white-space: normal;
@@ -536,8 +555,8 @@ const updateTooltipPosition = () => {
 /* 分页控件样式 */
 .pagination {
   position: absolute;
-  left: 10vw;  /* 与标题区域对齐 */
-  bottom: 10vh;  /* 调整为10vh */
+  left: 12vw;  /* 与标题区域对齐 */
+  bottom: 8vh;  /* 调整为10vh */
   display: flex;
   align-items: center;
   gap: 20px;
@@ -603,7 +622,7 @@ const updateTooltipPosition = () => {
 /* 搜索框样式优化 */
 .search-area {
   position: absolute;
-  top: 5vh;
+  top: 8vh;
   right: 20vw;
   z-index: 10;
   display: flex;
@@ -641,23 +660,24 @@ const updateTooltipPosition = () => {
 .prev-btn, .next-btn {
   width: 40px;
   height: 40px;
-  background: url('/public/map_images/翻页按键.png') no-repeat center;
+  background: url('/map_images/翻页按键.png') no-repeat center; /* 修正图片路径 */
   background-size: contain;
   border: none;
   cursor: pointer;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
+  z-index: 10000;
 }
 
 .prev-btn {
-  left:-3vw;
-  transform: translateY(-50%) rotate(90deg); /* 顺时针旋转90° */
+  left: -3vw;
+  transform: translateY(-50%) rotate(90deg);
 }
 
 .next-btn {
   right: -3vw;
-  transform: translateY(-50%) rotate(-90deg); /* 逆时针旋转90° */
+  transform: translateY(-50%) rotate(-90deg);
 }
 
 
@@ -667,7 +687,7 @@ const updateTooltipPosition = () => {
 
 .image1-container {
   position: absolute;
-  right: 44vw;  /* 调整位置避免重叠 */
+  right: 43vw;  /* 调整位置避免重叠 */
   bottom: 0vh;
   z-index: 5;
 }
@@ -675,8 +695,8 @@ const updateTooltipPosition = () => {
 .image1 {
   width: auto;
   height: auto;
-  max-width: 80%;
-  max-height: 80%;
+  max-width: 70%;
+  max-height: 70%;
 }
 
 /* 添加右侧文本框样式 */
@@ -722,6 +742,13 @@ const updateTooltipPosition = () => {
 .right-textbox span:active {
   transform: scale(0.95); /* 点击时轻微缩小 */
   transition: transform 0.1s ease; /* 快速过渡效果 */
+}
+/* 添加高亮样式 */
+.right-textbox span.highlighted {
+  color: rgb(171, 24, 24);
+  text-shadow: 0 0 5px rgb(248, 240, 240);
+  transform: scale(1.05);
+  font-size: 1.1vw;
 }
 </style>
 
@@ -782,5 +809,23 @@ const updateTooltipPosition = () => {
   font-family: 'MyCustomFont';
   src: url('/fonts/FZ1.ttf') format('truetype');
 }
+
+.map-container {
+  position: absolute;
+  right: 26.5vw;
+  top: 28vh;
+  z-index: 1000;
+}
+
+.map-name{
+  font-family: "MyCustomFont";
+  font-size: 1.5vw;
+  color: rgb(0, 0, 0); /* 统一为棕色 */
+  margin: 0;
+  padding-left: 1.5vw;
+  margin-bottom: -2vh;
+
+}
+
 </style>
 
