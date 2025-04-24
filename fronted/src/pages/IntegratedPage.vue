@@ -372,6 +372,10 @@ const getImageContainerStyle = (index) => {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+  background-image: url('/map_images/总背景底图.png'); 
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .page-section {

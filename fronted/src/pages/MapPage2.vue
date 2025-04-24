@@ -9,6 +9,9 @@
     </div>
     <div class="map-container">
       <h1 class="map-name">非物质文化遗产政策地图</h1>
+      <h2 class="map-description">
+        (暂无港澳台政策数据)
+      </h2>
     </div>
 
     <!-- 恢复搜索框 -->
@@ -118,7 +121,7 @@
 .china-map-container {
   position: absolute;
   right: 2vw;
-  bottom: -1vh;
+  bottom: -1.7vh;
   z-index: 1;
 }
 
@@ -823,9 +826,46 @@ const updateTooltipPosition = () => {
   color: rgb(0, 0, 0); /* 统一为棕色 */
   margin: 0;
   padding-left: 1.5vw;
-  margin-bottom: -2vh;
+  margin-bottom: -7vh;
+}
+.map-description{
+  font-family: "MyCustomFont";
+  font-size: 1vw;
+  color: rgba(0, 0, 0, 0.598); /* 统一为棕色 */
+  padding-left: 5vw;
 
 }
 
+
+.mapdetail-container {
+  position: absolute;
+  right: 5.1vw;
+  bottom: -0.5vh;
+  z-index: 1000;
+}
+.mapdetail-container2 {
+  position: absolute;
+  right: 5vw;
+  bottom: -1.4vh;
+  z-index: 1000;
+}
+.mapdetail-name{
+  font-family: "MyCustomFont";
+  font-size: 0.5vw;
+  color: rgb(0, 0, 0); /* 统一为棕色 */
+  margin: 0;
+  padding-left: 1.5vw;
+
+
+}
+.mapdetail-name2{
+  font-family: "MyCustomFont";
+  font-size: 0.4vw;
+  color: rgb(0, 0, 0); /* 统一为棕色 */
+  margin: 0;
+  padding-left: 1.5vw;
+
+
+}
 </style>
 

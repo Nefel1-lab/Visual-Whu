@@ -160,6 +160,8 @@ const router = useRouter()
 const changePage = (page) => {
   if (page < 1 || page > totalPages.value) return;
   showText.value = false;
+  activeTextIndex.value = -1; // 重置左侧文本框点击状态
+  currentDetail.value = '请点击左侧政策查看详情'; // 重置右侧文本框内容
   setTimeout(() => {
     currentPage.value = page;
     setTimeout(() => {
